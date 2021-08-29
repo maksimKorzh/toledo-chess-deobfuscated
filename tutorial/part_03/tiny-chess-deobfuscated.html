@@ -1,0 +1,168 @@
+<body>
+    <script>
+
+        /*************************************\
+         =====================================
+
+                     PIECE ENCODING
+
+         =====================================
+
+                    Black pawn      1
+                    Black knight    3
+                    Black bishop    4
+                    Black rook      5
+                    Black queen     6
+                    Black king      2
+                    
+                    White pawn      9
+                    White knight    11
+                    White bishop    12
+                    White rook      13
+                    White queen     14
+                    White king      10
+                    
+                    Offboard        7
+                    Empty square    0
+
+         =====================================
+
+                   BOARD REPRESENTATION
+                     (10 x 12 array)
+
+         =====================================
+               
+              7  7  7  7  7  7  7  7  7  7
+              7  7  7  7  7  7  7  7  7  7
+              7  5  3  4  6  2  4  3  5  7
+              7  1  1  1  1  1  1  1  1  7
+              7  0  0  0  0  0  0  0  0  7
+              7  0  0  0  0  0  0  0  0  7
+              7  0  0  0  0  0  0  0  0  7
+              7  0  0  0  0  0  0  0  0  7
+              7  9  9  9  9  9  9  9  9  7
+              7 13 11 12 14 10 12 11 13  7
+              7  7  7  7  7  7  7  7  7  7
+              7  7  7  7  7  7  7  7  7  7
+          
+          =====================================
+              
+                      COLOR ENCODING
+          
+          =====================================
+          
+                       White    8
+                       Black    0
+
+          =====================================
+
+        \*************************************/
+        
+        /*************************************\
+         =====================================
+             
+                       DEBUGGING
+
+         =====================================
+        \*************************************/
+        
+        // map piece codes to unicode chars
+        pieces = '.♟♚♞♝♜♛  ♙♔♘♗♖♕';
+        
+        // print board array
+        function printBoard() {
+          // board array string
+          boardString = '';
+          
+          // loop over board ranks
+          for (var row = 0; row < 12; row++) {
+            // loop over board files
+            for (var col = 0; col < 10; col++) {
+              // covert file and rank to board square index
+              var square = row * 10 + col;
+              
+              // populate board string
+              boardString += ' ' + pieces[board[square]];
+            }
+            
+            // print next rank
+            boardString += '\n';
+          }
+          
+          // print board array
+          console.log(boardString);
+        }
+
+
+        
+        /*************************************\
+         =====================================
+             
+                         ENGINE
+
+         =====================================
+        \*************************************/
+        
+        for (B = i = y = u = b = i = 5 - 5,
+        x = 10,
+        board = [],
+        l = []; B++ < 304; board[B - 1] = B % x ? B / x % x < 2 | B % x < 2 ? 7 : B / x & 4 ? 0 : l[i++] = "ECDFBDCEAAAAAAAAIIIIIIIIMKLNJLKM@G@TSb~?A6J57IKJT576,+-48HLSUmgukgg OJNMLK  IDHGFE".charCodeAt(y++) - 64 : 7)
+            ;
+        
+        // search position for a best move
+        function search(sideToMove, h, searchDepth, s) {
+            //console.log('search() called with args: ' + sideToMove + ' ' + h + ' ' + searchDepth + ' ' + s);
+            sideToMove ^= 8;
+            for (var movedPiece, S, C, A, capturedPiece, targetSquare, G, d = searchDepth && search(sideToMove, 0) > 1e4, sourcePiece, N = -1e8, sourceSquare = 20, K = 78 - h << 9; ++sourceSquare < 99; )
+                if ((movedPiece = board[targetSquare = sourceSquare]) && (G = movedPiece ^ sideToMove) < 7) {
+                    A = G-- & 2 ? 8 : 4;
+                    C = movedPiece - 9 ? l[61 + G] : 49;
+                    do
+                        if (!(capturedPiece = board[targetSquare += l[C]]) && !!G | A < 3 || (capturedPiece + 1 ^ sideToMove) > 9 && G | A > 2) {
+                            if (!(capturedPiece - 2 & 7))
+                                return K;
+                            sourcePiece = G | (sideToMove ? targetSquare > 29 : targetSquare < 91) ? movedPiece : 6 ^ sideToMove;
+                            S = (capturedPiece && l[capturedPiece & 7 | 32] * 2 - h - G) + (sourcePiece - movedPiece ? 110 : !G && (A < 2) + 1);
+                            if (searchDepth > h || 1 < searchDepth & searchDepth == h && S > 2 | d) {
+                                // make move
+                                board[targetSquare] = sourcePiece;
+                                board[sourceSquare] = 0;
+                                //alert(); printBoard();
+                                
+                                S -= search(sideToMove, h + 1, searchDepth, S - N);
+                                if (!(h || searchDepth - 1 | B - sourceSquare | targetSquare - b | S < -1e4))
+                                    return drawBoard(),
+                                    sideToMove && setTimeout("search(8,0,3),search(8,0,1)", 75);
+                                
+                                // take back
+                                board[sourceSquare] = movedPiece;    // movedPiece is sourcePiece in all cases but pawn promotions
+                                board[targetSquare] = capturedPiece; // whatever piece occupying the target square before a move was made
+                                //alert(); printBoard();
+                            }
+                            if (S > N || !h & S == N && Math.random() < .5)
+                                if (N = S,
+                                searchDepth > 1)
+                                    if (h ? s - S < 0 : (B = sourceSquare,
+                                    b = targetSquare,
+                                    0))
+                                        break
+                        }
+                    while (!capturedPiece & G > 2 || (targetSquare = sourceSquare,
+                    (G || A > 2 | (sideToMove ? sourceSquare > 78 : sourceSquare < 41) & !capturedPiece) && ++C * --A))
+                }
+            return -K + 768 < N | d && N
+        }
+        
+        // render board to screen
+        function drawBoard() {
+            i = "<table>";
+            for (u = 18; u < 99; document.body.innerHTML = i += ++u % x - 9 ? "<th width=60 height=60 onclick='board[b=" + u + "]>8?drawBoard():search(0,0,1)'style='font-size:50px'bgcolor=#" + (u - B ? u * .9 & 1 || 9 : "d") + "0f0e0>&#" + (board[u] ? 9808 + l[67 + board[u]] : 160) : u++ && "<tr>")
+                B = b
+            
+            // print board every move
+            printBoard();
+        }
+        drawBoard()
+    </script>
+</body>
+
